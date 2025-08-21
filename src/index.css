@@ -8,98 +8,94 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Core palette: Royal purple primary with complementary violet and lavender accents */
+    --background: 258 60% 99%;
+    --foreground: 262 60% 12%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 262 60% 12%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 262 60% 12%;
 
-    --primary: 264 83% 57%;
+    --primary: 262 85% 58%; /* royal purple */
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 217 91% 55%;
+    --secondary: 255 70% 62%; /* violet */
     --secondary-foreground: 0 0% 100%;
 
-    --muted: 264 40% 96%;
-    --muted-foreground: 264 20% 40%;
+    --muted: 260 40% 96%;
+    --muted-foreground: 260 24% 40%;
 
-    --accent: 240 100% 70%;
+    --accent: 275 90% 70%; /* lavender glow */
     --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 78% 55%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 264 31% 91%;
-    --input: 264 31% 91%;
-    --ring: 264 83% 57%;
+    --border: 260 30% 90%;
+    --input: 260 30% 90%;
+    --ring: 262 85% 58%;
 
-    /* Custom design tokens - Enhanced Purple/Blue theme */
-    --gradient-primary: linear-gradient(135deg, hsl(264 83% 57%), hsl(217 91% 55%));
-    --gradient-hero: linear-gradient(135deg, hsl(264 83% 62%), hsl(240 100% 70%));
-    --gradient-card: linear-gradient(145deg, hsl(0 0% 100%), hsl(264 40% 98%));
-    --gradient-accent: linear-gradient(135deg, hsl(240 100% 70%), hsl(217 91% 55%));
-    --shadow-soft: 0 4px 20px hsl(264 83% 57% / 0.12);
-    --shadow-medium: 0 8px 30px hsl(264 83% 57% / 0.18);
-    --shadow-glow: 0 0 40px hsl(264 83% 57% / 0.25);
+    /* Elite gradients and shadows */
+    --gradient-primary: linear-gradient(135deg, hsl(262 85% 58%), hsl(255 70% 62%));
+    --gradient-hero: linear-gradient(135deg, hsl(262 85% 65%), hsl(275 90% 70%));
+    --gradient-card: linear-gradient(145deg, hsl(0 0% 100%), hsl(260 40% 98%));
+    --gradient-accent: linear-gradient(135deg, hsl(275 90% 70%), hsl(255 70% 62%));
+    --shadow-soft: 0 6px 24px hsl(262 85% 58% / 0.14);
+    --shadow-medium: 0 10px 36px hsl(262 85% 58% / 0.2);
+    --shadow-glow: 0 0 48px hsl(262 85% 58% / 0.28);
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
 
-    --sidebar-background: 0 0% 98%;
-
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    /* Sidebar theme */
+    --sidebar-background: 0 0% 99%;
+    --sidebar-foreground: 262 40% 18%;
+    --sidebar-primary: 262 85% 58%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 260 40% 96%;
+    --sidebar-accent-foreground: 262 40% 18%;
+    --sidebar-border: 260 30% 90%;
+    --sidebar-ring: 262 85% 58%;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    --background: 260 45% 8%;
+    --foreground: 260 30% 96%;
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card: 260 50% 10%;
+    --card-foreground: 260 30% 96%;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 260 50% 10%;
+    --popover-foreground: 260 30% 96%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 265 90% 72%;
+    --primary-foreground: 260 40% 10%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 258 60% 60%;
+    --secondary-foreground: 260 40% 10%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 260 30% 16%;
+    --muted-foreground: 260 16% 70%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 275 90% 70%;
+    --accent-foreground: 260 40% 10%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 70% 45%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --border: 260 30% 18%;
+    --input: 260 30% 18%;
+    --ring: 265 90% 72%;
+
+    --sidebar-background: 260 45% 8%;
+    --sidebar-foreground: 260 30% 96%;
+    --sidebar-primary: 265 90% 72%;
+    --sidebar-primary-foreground: 260 40% 10%;
+    --sidebar-accent: 260 30% 16%;
+    --sidebar-accent-foreground: 260 30% 96%;
+    --sidebar-border: 260 30% 18%;
+    --sidebar-ring: 265 90% 72%;
   }
 }
 
@@ -110,5 +106,12 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  }
+}
+
+@layer utilities {
+  .font-elegant {
+    font-family: "Playfair Display", ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
   }
 }

@@ -7,6 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 const grades = [
   "4th Grade", "5th Grade", "6th Grade", "7th Grade", "8th Grade"
 ];
+const boards = ["CBSE","ICSE","State board"];
 
 export const ContactForm = () => {
   const [formData, setFormData] = useState({
@@ -40,7 +41,7 @@ export const ContactForm = () => {
   if (isSubmitted) {
     return (
       <Card className="w-full max-w-md mx-auto shadow-soft bg-gradient-card">
-        <CardContent className="text-center py-8">
+        <CardContent className="text-center py-0">
           <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-primary text-white flex items-center justify-center">
             <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
@@ -55,7 +56,7 @@ export const ContactForm = () => {
 
   return (
     <Card className="w-full max-w-md mx-auto shadow-soft bg-gradient-card">
-      <CardContent className="py-6">
+      <CardContent className="py-4">
         <form onSubmit={handleSubmit} className="space-y-4">
           <FormField
             label="Parent's Name"
@@ -90,7 +91,9 @@ export const ContactForm = () => {
           <FormField
             label="Board"
             name="board"
-            placeholder="Enter board (e.g., CBSE, ICSE, State Board)"
+            type="select"
+            options={boards}
+            placeholder="Select Board"
             required
             value={formData.board}
             onChange={updateField("board")}
