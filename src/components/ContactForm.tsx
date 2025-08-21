@@ -5,12 +5,7 @@ import { FormField } from "@/components/ui/form-field";
 import { useToast } from "@/hooks/use-toast";
 
 const grades = [
-  "Pre-K", "Kindergarten", "1st Grade", "2nd Grade", "3rd Grade", 
   "4th Grade", "5th Grade", "6th Grade", "7th Grade", "8th Grade"
-];
-
-const boards = [
-  "CBSE", "ICSE", "State Board", "IB", "IGCSE", "Other"
 ];
 
 export const ContactForm = () => {
@@ -20,6 +15,7 @@ export const ContactForm = () => {
     grade: "",
     board: ""
   });
+  const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
 
@@ -30,11 +26,7 @@ export const ContactForm = () => {
     // Simulate form submission
     await new Promise(resolve => setTimeout(resolve, 1000));
 
-    toast({
-      title: "Thank you for your interest!",
-      description: "We'll contact you soon with more information about our spelling game.",
-    });
-
+    setIsSubmitted(true);
     setFormData({ name: "", phone: "", grade: "", board: "" });
     setIsSubmitting(false);
   };
@@ -45,17 +37,25 @@ export const ContactForm = () => {
 
   const isFormValid = formData.name && formData.phone && formData.grade && formData.board;
 
+  if (isSubmitted) {
+    return (
+      <Card className="w-full max-w-md mx-auto shadow-soft bg-gradient-card">
+        <CardContent className="text-center py-8">
+          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-primary text-white flex items-center justify-center">
+            <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+          <h3 className="text-xl font-bold text-primary mb-2">Thank you!</h3>
+          <p className="text-muted-foreground">We'll connect with you soon.</p>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card className="w-full max-w-md mx-auto shadow-soft bg-gradient-card">
-      <CardHeader className="text-center">
-        <CardTitle className="text-2xl font-bold text-primary">
-          Get Early Access
-        </CardTitle>
-        <CardDescription>
-          Join our community and help your child excel in spelling!
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
+      <CardContent className="py-6">
         <form onSubmit={handleSubmit} className="space-y-4">
           <FormField
             label="Parent's Name"
@@ -67,7 +67,7 @@ export const ContactForm = () => {
           />
           
           <FormField
-            label="Phone Number"
+            label="Parent's Phone Number"
             name="phone"
             type="tel"
             placeholder="Enter your phone number"
@@ -88,11 +88,9 @@ export const ContactForm = () => {
           />
           
           <FormField
-            label="Educational Board"
+            label="Board"
             name="board"
-            type="select"
-            options={boards}
-            placeholder="Select board"
+            placeholder="Enter board (e.g., CBSE, ICSE, State Board)"
             required
             value={formData.board}
             onChange={updateField("board")}
@@ -105,7 +103,7 @@ export const ContactForm = () => {
             className="w-full mt-6"
             disabled={!isFormValid || isSubmitting}
           >
-            {isSubmitting ? "Submitting..." : "Get Early Access"}
+            {isSubmitting ? "Submitting..." : "Submit"}
           </Button>
         </form>
       </CardContent>
