@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Signups Dashboard</title>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-color: #6b4eff;
+      --text-color: #1a1a1a;
+      --text-light: #6b7280;
+      --border-color: #e5e7eb;
+      --bg-color: #f9fafb;
+      --hover-bg: #f3f4f6;
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      line-height: 1.5;
+      color: var(--text-color);
+      background-color: var(--bg-color);
+      padding: 20px;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    h1 {
+      text-align: center;
+      margin: 20px 0 30px;
+      color: var(--text-color);
+      font-weight: 600;
+    }
+    
+    .table-container {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+    
+    th, td {
+      padding: 16px 24px;
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    th {
+      background-color: #f8fafc;
+      color: var(--text-light);
+      font-weight: 500;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.05em;
+    }
+    
+    tr:last-child td {
+      border-bottom: none;
+    }
+    
+    tr:hover {
+      background-color: var(--hover-bg);
+    }
+    
+    .timestamp {
+      color: var(--text-light);
+      font-size: 0.85rem;
+    }
+    
+    .loading, .no-data {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-light);
+    }
+    
+    .error-message {
+      background-color: #fee2e2;
+      color: #b91c1c;
+      padding: 16px 24px;
+      border-radius: 8px;
+      margin: 20px 0;
+      text-align: center;
+    }
+    
+    @media (max-width: 768px) {
+      .table-container {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+      
+      table {
+        min-width: 800px;
+      }
+      
+      th, td {
+        padding: 12px 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Signups Dashboard</h1>
+    <div class="table-container">
+      <div id="signupsContainer">
+        <div class="loading">Loading signups...</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Your Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyDO7cACg6BNA8KiYvMhoxonDxCSKBTgwiE",
+      authDomain: "yevvolearn.firebaseapp.com",
+      projectId: "yevvolearn",
+      storageBucket: "yevvolearn.firebasestorage.app",
+      messagingSenderId: "114822749369",
+      appId: "1:114822749369:web:599d567dd36e3ce7870f68",
+      measurementId: "G-9V2E5C1M9V"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    // Function to format timestamp
+    function formatTimestamp(timestamp) {
+      if (!timestamp) return 'N/A';
+      const date = timestamp.toDate();
+      return date.toLocaleString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
+
+    // Function to display signups in a table
+    function displaySignups(signups) {
+      const container = document.getElementById('signupsContainer');
+      
+      if (signups.length === 0) {
+        container.innerHTML = '<div class="no-data">No signups found.</div>';
+        return;
+      }
+
+      const tableHTML = `
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Phone</th>
+              <th>Grade</th>
+              <th>Board</th>
+              <th>Submitted At</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${signups.map(signup => `
+              <tr>
+                <td>${escapeHtml(signup.childName) || 'N/A'}</td>
+                <td>${escapeHtml(signup.parentPhone) || 'N/A'}</td>
+                <td>${escapeHtml(signup.childGrade) || 'N/A'}</td>
+                <td>${escapeHtml(signup.board) || 'N/A'}</td>
+                <td class="timestamp">${formatTimestamp(signup.submittedAt)}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      `;
+      
+      container.innerHTML = tableHTML;
+    }
+    
+    // Helper function to escape HTML
+    function escapeHtml(unsafe) {
+      if (!unsafe) return '';
+      return unsafe
+        .toString()
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    // Load and display signups
+    function loadSignups() {
+      const container = document.getElementById('signupsContainer');
+      
+      db.collection('signups')
+        .orderBy('submittedAt', 'desc')
+        .onSnapshot((querySnapshot) => {
+          const signups = [];
+          querySnapshot.forEach((doc) => {
+            signups.push({ id: doc.id, ...doc.data() });
+          });
+          displaySignups(signups);
+        }, (error) => {
+          console.error("Error getting signups: ", error);
+          container.innerHTML = `
+            <div class="error-message">
+              Error loading signups. Please check console for details.
+            </div>
+          `;
+        });
+    }
+
+    // Initialize the dashboard when the page loads
+    document.addEventListener('DOMContentLoaded', loadSignups);
+  </script>
+</body>
+</html>

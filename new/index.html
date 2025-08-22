@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>SpellMaster - Master Spelling Skills</title>
-  
+
   <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
@@ -15,6 +15,8 @@
   />
 
   <style>
+    /* Your existing styles here, unchanged */
+
     * {
       margin: 0;
       padding: 0;
@@ -44,8 +46,8 @@
     }
 
     .logo-image {
-      max-width: 350px;
-      max-height: 140px;
+      max-width: 450px;
+      max-height: 200px;
       width: auto;
       height: auto;
       transition: all 0.3s ease;
@@ -343,8 +345,8 @@
       }
 
       .logo-image {
-        max-width: 280px;
-        max-height: 110px;
+        max-width: 380px;
+        max-height: 160px;
       }
 
       .logo-placeholder {
@@ -379,8 +381,8 @@
       }
 
       .logo-image {
-        max-width: 250px;
-        max-height: 100px;
+        max-width: 300px;
+        max-height: 120px;
       }
 
       .logo-placeholder {
@@ -423,41 +425,23 @@
         class="logo-image"
         id="logoImage"
       />
-      <div class="logo-placeholder" id="logoPlaceholder">
-        Spelling App Logo
-      </div>
+      <div class="logo-placeholder" id="logoPlaceholder">Spelling App Logo</div>
     </div>
 
     <!-- Form Section -->
     <div class="form-section">
       <div class="form-container">
-        <h2 class="form-title">
-          Spelling Practice Made Easy for Kids. Get Good Marks with Confidence.
-        </h2>
+        <h2 class="form-title">Spelling Practice Made Easy for Kids. Get Good Marks with Confidence.</h2>
         <form id="enrollmentForm">
           <div class="form-group">
             <label for="childName">Child's Name</label>
-            <input
-              type="text"
-              id="childName"
-              name="childName"
-              placeholder="Enter your child's name"
-              required
-            />
+            <input type="text" id="childName" name="childName" placeholder="Enter your child's name" required />
           </div>
 
           <div class="form-group">
             <label for="parentPhone">Parent's Phone Number</label>
-            <input
-              type="tel"
-              id="parentPhone"
-              name="parentPhone"
-              placeholder="Enter 10-digit phone number"
-              required
-            />
-            <div class="error-message" id="phoneError">
-              Please enter a valid 10-digit phone number
-            </div>
+            <input type="tel" id="parentPhone" name="parentPhone" placeholder="Enter 10-digit phone number" required />
+            <div class="error-message" id="phoneError">Please enter a valid 10-digit phone number</div>
           </div>
 
           <div class="form-group">
@@ -492,19 +476,15 @@
             </select>
           </div>
 
-          <button type="submit" class="submit-btn" id="submitBtn">
-            Get Started with Spelling
-          </button>
+          <button type="submit" class="submit-btn" id="submitBtn">Get Started with Spelling</button>
 
-          <div class="success-message" id="successMessage">
-            🎉 Thanks! We've received your details. Get ready to master spelling!
-          </div>
+          <div class="success-message" id="successMessage">🎉 Thanks! We've received your details. Get ready to master spelling!</div>
         </form>
       </div>
     </div>
 
     <!-- Copyright Section -->
-    <div class="copyright">© 2025 SpellMaster. All rights reserved.</div>
+    <div class="copyright">© 2025 Spelldaily. All rights reserved.</div>
   </div>
 
   <!-- Loading Overlay -->
@@ -512,9 +492,7 @@
     <div class="loading-container">
       <div class="loading-spinner"></div>
       <div class="loading-text">Processing Your Request</div>
-      <div class="loading-subtext">
-        Our team will reach out to you soon!<br />Thank you for your patience.
-      </div>
+      <div class="loading-subtext">Our team will reach out to you soon!<br />Thank you for your patience.</div>
     </div>
   </div>
 
@@ -560,7 +538,7 @@
       storageBucket: "yevvolearn.firebasestorage.app",
       messagingSenderId: "114822749369",
       appId: "1:114822749369:web:599d567dd36e3ce7870f68",
-      measurementId: "G-9V2E5C1M9V"
+      measurementId: "G-9V2E5C1M9V",
     };
 
     // Initialize Firebase
@@ -573,29 +551,30 @@
         // Add timestamp to form data
         const submissionData = {
           ...formData,
-          submittedAt: firebase.firestore.FieldValue.serverTimestamp()
+          submittedAt: firebase.firestore.FieldValue.serverTimestamp(),
         };
 
         // Add a new document to the 'signups' collection
-        db.collection("signups").add(submissionData)
+        db.collection("signups")
+          .add(submissionData)
           .then((docRef) => {
             console.log("Document written with ID: ", docRef.id);
             resolve({
               result: "success",
               message: "Form submitted successfully!",
-              id: docRef.id
+              id: docRef.id,
             });
           })
           .catch((error) => {
             console.error("Error adding document: ", error);
             reject({
               result: "error",
-              message: error.message || "Failed to submit form"
+              message: error.message || "Failed to submit form",
             });
           });
       });
     }
-    
+
     form.addEventListener("submit", async function (e) {
       e.preventDefault();
 
@@ -617,10 +596,10 @@
       };
 
       try {
-        console.log('Submitting form data:', formData);
+        console.log("Submitting form data:", formData);
         const result = await submitForm(formData);
         loadingOverlay.classList.remove("show");
-        console.log('Form submission result:', result);
+        console.log("Form submission result:", result);
 
         if (result && result.result === "success") {
           successMessage.classList.add("show");
@@ -629,8 +608,9 @@
             successMessage.classList.remove("show");
           }, 5000);
         } else {
-          const errorMsg = result && result.message ? result.message : 'Unknown error occurred';
-          console.error('Submission failed:', errorMsg);
+          const errorMsg =
+            result && result.message ? result.message : "Unknown error occurred";
+          console.error("Submission failed:", errorMsg);
           alert(`Submission failed: ${errorMsg}`);
         }
 
