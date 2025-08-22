@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SpellMaster - Master Spelling Skills</title>
+  
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Edu+NSW+ACT+Cursive:wght@700&display=swap"
+    rel="stylesheet"
+  />
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #ffffff;
+      min-height: 100vh;
+      color: #333;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    /* Logo Section */
+    .logo-section {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 40px 0;
+      padding: 30px 0;
+    }
+
+    .logo-image {
+      max-width: 350px;
+      max-height: 140px;
+      width: auto;
+      height: auto;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      display: block;
+      margin: 0 auto;
+    }
+
+    .logo-image:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.1);
+    }
+
+    /* Fallback if logo doesn't load */
+    .logo-placeholder {
+      width: 350px;
+      height: 140px;
+      margin: 0 auto;
+      background: #f8fafc;
+      border: 2px dashed #cbd5e1;
+      border-radius: 12px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      color: #64748b;
+      font-size: 1.1rem;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .logo-placeholder::before {
+      content: "📝";
+      font-size: 2rem;
+      margin-right: 12px;
+    }
+
+    /* Form Section */
+    .form-section {
+      max-width: 700px;
+      margin: 80px auto;
+      padding: 0 20px;
+    }
+
+    .form-container {
+      background: #ffffff;
+      padding: 64px 58px;
+      border-radius: 20px;
+      box-shadow: 0 10px 40px rgba(139, 92, 246, 0.08);
+      border: 1px solid #f1f5f9;
+      animation: slideInUp 1s ease-out;
+      width: 100%;
+      max-width: 700px;
+    }
+
+    .form-title {
+      font-family: 'Edu NSW ACT Cursive', cursive;
+      font-size: 2.6rem;
+      color: #6b4eff;
+      margin-bottom: 35px;
+      text-align: center;
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: 0.5px;
+      word-spacing: 10px;
+    }
+    @media (max-width: 768px) {
+      .form-title {
+        font-size: 2rem;
+        word-spacing: 7px;
+      }
+    }
+    @media (max-width: 480px) {
+      .form-title {
+        font-size: 1.4rem;
+        word-spacing: 4px;
+      }
+    }
+
+    .form-group {
+      margin-bottom: 30px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 10px;
+      color: #374151;
+      font-weight: 600;
+      font-size: 1rem;
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 18px;
+      border: 2px solid #e5e7eb;
+      border-radius: 12px;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      background: #ffffff;
+      color: #374151;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: #6b4eff;
+      box-shadow: 0 0 0 3px rgba(107, 78, 255, 0.15);
+      transform: translateY(-1px);
+    }
+
+    .form-group input::placeholder {
+      color: #9ca3af;
+    }
+
+    .submit-btn {
+      width: 100%;
+      padding: 18px;
+      background: linear-gradient(90deg, #6b4eff 0%, #b37dff 100%);
+      color: white;
+      border: none;
+      border-radius: 16px;
+      font-size: 1.15rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(107, 78, 255, 0.2);
+      margin-top: 10px;
+    }
+
+    .submit-btn:hover {
+      background: linear-gradient(90deg, #593ad7 0%, #8c62ee 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(107, 78, 255, 0.3);
+    }
+
+    .submit-btn:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Loading Animation */
+    .loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.95);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      backdrop-filter: blur(5px);
+    }
+
+    .loading-overlay.show {
+      display: flex;
+    }
+
+    .loading-container {
+      text-align: center;
+      background: white;
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+      animation: loadingPulse 0.6s ease-out;
+      max-width: 320px;
+      width: 90vw;
+    }
+
+    .loading-spinner {
+      width: 60px;
+      height: 60px;
+      margin: 0 auto 20px;
+      border: 4px solid #e5e7eb;
+      border-top: 4px solid #6b4eff;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    .loading-text {
+      font-size: 1.3rem;
+      color: #6b4eff;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .loading-subtext {
+      font-size: 1rem;
+      color: #6b7280;
+      line-height: 1.5;
+    }
+
+    /* Success Message */
+    .success-message {
+      background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+      color: white;
+      padding: 20px;
+      border-radius: 12px;
+      text-align: center;
+      margin-top: 25px;
+      box-shadow: 0 4px 15px rgba(16, 185, 129, 0.2);
+      animation: successPulse 0.6s ease-out;
+      display: none;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .success-message.show {
+      display: block;
+    }
+
+    /* Copyright Section */
+    .copyright {
+      text-align: center;
+      margin-top: 60px;
+      padding: 30px 0;
+      color: #6b7280;
+      font-size: 0.9rem;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    /* Animations */
+    @keyframes slideInUp {
+      from {
+        opacity: 0;
+        transform: translateY(40px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes successPulse {
+      0% {
+        opacity: 0;
+        transform: scale(0.95);
+      }
+      50% {
+        transform: scale(1.02);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    @keyframes loadingPulse {
+      0% {
+        opacity: 0;
+        transform: scale(0.9);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* Error styling */
+    .error {
+      border-color: #ef4444 !important;
+    }
+
+    .error-message {
+      color: #ef4444;
+      font-size: 0.85rem;
+      margin-top: 8px;
+      display: none;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .form-container {
+        padding: 40px 30px;
+      }
+
+      .container {
+        padding: 15px;
+      }
+
+      .form-section {
+        margin: 60px auto;
+      }
+
+      .logo-image {
+        max-width: 280px;
+        max-height: 110px;
+      }
+
+      .logo-placeholder {
+        width: 280px;
+        height: 110px;
+        font-size: 1rem;
+      }
+
+      .logo-placeholder::before {
+        font-size: 1.8rem;
+        margin-right: 10px;
+      }
+
+      .copyright {
+        margin-top: 40px;
+        padding: 20px 0;
+      }
+
+      .loading-container {
+        padding: 30px 25px;
+        margin: 0 20px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .form-container {
+        padding: 30px 25px;
+      }
+
+      .form-section {
+        margin: 40px auto;
+      }
+
+      .logo-image {
+        max-width: 250px;
+        max-height: 100px;
+      }
+
+      .logo-placeholder {
+        width: 250px;
+        height: 100px;
+        font-size: 0.9rem;
+      }
+
+      .logo-placeholder::before {
+        font-size: 1.6rem;
+        margin-right: 8px;
+      }
+
+      .loading-container {
+        padding: 25px 20px;
+      }
+
+      .loading-text {
+        font-size: 1.1rem;
+      }
+
+      .loading-subtext {
+        font-size: 0.9rem;
+      }
+    }
+
+    /* Additional Clean Styling */
+    .form-group select option {
+      padding: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Logo Section -->
+    <div class="logo-section">
+      <img
+        src="./logo1.png"
+        alt="SpellMaster Logo"
+        class="logo-image"
+        id="logoImage"
+      />
+      <div class="logo-placeholder" id="logoPlaceholder">
+        Spelling App Logo
+      </div>
+    </div>
+
+    <!-- Form Section -->
+    <div class="form-section">
+      <div class="form-container">
+        <h2 class="form-title">
+          Spelling Practice Made Easy for Kids. Get Good Marks with Confidence.
+        </h2>
+        <form id="enrollmentForm">
+          <div class="form-group">
+            <label for="childName">Child's Name</label>
+            <input
+              type="text"
+              id="childName"
+              name="childName"
+              placeholder="Enter your child's name"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="parentPhone">Parent's Phone Number</label>
+            <input
+              type="tel"
+              id="parentPhone"
+              name="parentPhone"
+              placeholder="Enter 10-digit phone number"
+              required
+            />
+            <div class="error-message" id="phoneError">
+              Please enter a valid 10-digit phone number
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="childGrade">Child's Grade</label>
+            <select id="childGrade" name="childGrade" required>
+              <option value="">Select Grade</option>
+              <option value="1">Grade 1</option>
+              <option value="2">Grade 2</option>
+              <option value="3">Grade 3</option>
+              <option value="4">Grade 4</option>
+              <option value="5">Grade 5</option>
+              <option value="6">Grade 6</option>
+              <option value="7">Grade 7</option>
+              <option value="8">Grade 8</option>
+              <option value="9">Grade 9</option>
+              <option value="10">Grade 10</option>
+              <option value="11">Grade 11</option>
+              <option value="12">Grade 12</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="board">Board</label>
+            <select id="board" name="board" required>
+              <option value="">Select Board</option>
+              <option value="CBSE">CBSE</option>
+              <option value="ICSE">ICSE</option>
+              <option value="State Board">State Board</option>
+              <option value="IB">IB (International Baccalaureate)</option>
+              <option value="IGCSE">IGCSE</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+
+          <button type="submit" class="submit-btn" id="submitBtn">
+            Get Started with Spelling
+          </button>
+
+          <div class="success-message" id="successMessage">
+            🎉 Thanks! We've received your details. Get ready to master spelling!
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Copyright Section -->
+    <div class="copyright">© 2025 SpellMaster. All rights reserved.</div>
+  </div>
+
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-container">
+      <div class="loading-spinner"></div>
+      <div class="loading-text">Processing Your Request</div>
+      <div class="loading-subtext">
+        Our team will reach out to you soon!<br />Thank you for your patience.
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const logoImage = document.getElementById("logoImage");
+    const logoPlaceholder = document.getElementById("logoPlaceholder");
+
+    logoImage.addEventListener("error", function () {
+      this.style.display = "none";
+      logoPlaceholder.style.display = "flex";
+    });
+
+    logoImage.addEventListener("load", function () {
+      this.style.display = "block";
+      logoPlaceholder.style.display = "none";
+    });
+
+    const form = document.getElementById("enrollmentForm");
+    const phoneInput = document.getElementById("parentPhone");
+    const submitBtn = document.getElementById("submitBtn");
+    const successMessage = document.getElementById("successMessage");
+    const loadingOverlay = document.getElementById("loadingOverlay");
+
+    phoneInput.addEventListener("input", function () {
+      const phoneValue = this.value.replace(/\D/g, "");
+      this.value = phoneValue;
+
+      const phoneError = document.getElementById("phoneError");
+      if (phoneValue.length !== 10 && phoneValue.length > 0) {
+        this.classList.add("error");
+        phoneError.style.display = "block";
+      } else {
+        this.classList.remove("error");
+        phoneError.style.display = "none";
+      }
+    });
+
+    // Initialize Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyDO7cACg6BNA8KiYvMhoxonDxCSKBTgwiE",
+      authDomain: "yevvolearn.firebaseapp.com",
+      projectId: "yevvolearn",
+      storageBucket: "yevvolearn.firebasestorage.app",
+      messagingSenderId: "114822749369",
+      appId: "1:114822749369:web:599d567dd36e3ce7870f68",
+      measurementId: "G-9V2E5C1M9V"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    // Function to handle form submission using Firebase
+    function submitForm(formData) {
+      return new Promise((resolve, reject) => {
+        // Add timestamp to form data
+        const submissionData = {
+          ...formData,
+          submittedAt: firebase.firestore.FieldValue.serverTimestamp()
+        };
+
+        // Add a new document to the 'signups' collection
+        db.collection("signups").add(submissionData)
+          .then((docRef) => {
+            console.log("Document written with ID: ", docRef.id);
+            resolve({
+              result: "success",
+              message: "Form submitted successfully!",
+              id: docRef.id
+            });
+          })
+          .catch((error) => {
+            console.error("Error adding document: ", error);
+            reject({
+              result: "error",
+              message: error.message || "Failed to submit form"
+            });
+          });
+      });
+    }
+    
+    form.addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      const phone = phoneInput.value.replace(/\D/g, "");
+      if (phone.length !== 10) {
+        phoneInput.classList.add("error");
+        document.getElementById("phoneError").style.display = "block";
+        return;
+      }
+
+      loadingOverlay.classList.add("show");
+
+      const formData = {
+        childName: document.getElementById("childName").value,
+        parentPhone: phone,
+        childGrade: document.getElementById("childGrade").value,
+        board: document.getElementById("board").value,
+        timestamp: new Date().toISOString(),
+      };
+
+      try {
+        console.log('Submitting form data:', formData);
+        const result = await submitForm(formData);
+        loadingOverlay.classList.remove("show");
+        console.log('Form submission result:', result);
+
+        if (result && result.result === "success") {
+          successMessage.classList.add("show");
+          form.reset();
+          setTimeout(() => {
+            successMessage.classList.remove("show");
+          }, 5000);
+        } else {
+          const errorMsg = result && result.message ? result.message : 'Unknown error occurred';
+          console.error('Submission failed:', errorMsg);
+          alert(`Submission failed: ${errorMsg}`);
+        }
+
+        console.log("Form data:", formData);
+      } catch (error) {
+        loadingOverlay.classList.remove("show");
+        alert("There was an error submitting your form. Please try again.");
+        console.error("Submission error:", error);
+      }
+    });
+
+    // Smooth focus animations
+    const inputs = document.querySelectorAll("input, select");
+    inputs.forEach((input) => {
+      input.addEventListener("focus", function () {
+        this.style.transform = "translateY(-1px)";
+      });
+
+      input.addEventListener("blur", function () {
+        this.style.transform = "translateY(0)";
+      });
+    });
+  </script>
+</body>
+</html>
